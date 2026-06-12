@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IoT Data Interpreter Agent</title>
+  <link rel="preconnect" href="/static" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">◎</div>
+      <div>
+        <h1>IoT Data Interpreter <span>Agent</span></h1>
+        <p class="tag">Raw telemetry → narrated insight → action · Builathon UC #43</p>
+      </div>
+    </div>
+    <div class="status">
+      <span id="llmBadge" class="badge muted">checking engine…</span>
+      <span class="conn"><span id="connDot" class="dot off">●</span><span id="connText">connecting…</span></span>
+    </div>
+  </header>
+
+  <section class="scenarios">
+    <div class="scn-left">
+      <span class="scn-label">Live scenario</span>
+      <div class="scn-buttons" id="scnButtons"></div>
+    </div>
+    <p class="scn-desc" id="scnDesc">—</p>
+  </section>
+
+  <section class="kpis" id="kpis"></section>
+
+  <main class="grid">
+    <section class="col-left">
+      <h2 class="section-title">Live Sensors <span class="hint">Z-score · IQR · Isolation Forest</span></h2>
+      <div class="sensor-grid" id="sensorGrid"></div>
+    </section>
+
+    <section class="col-right">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>AI Anomaly Feed</h2>
+          <button id="btnInvestigate" class="btn primary">⚙ Deep Investigation</button>
+        </div>
+        <div class="feed" id="feed">
+          <div class="empty">Watching the fleet… anomalies will appear here, narrated.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Maintenance Queue</h2>
+          <button id="btnReport" class="btn">⤓ Report</button>
+        </div>
+        <div class="queue" id="queue">
+          <div class="empty">No open actions.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>🛰 Agent Investigation</h2>
+        <button id="modalClose" class="btn ghost">✕</button>
+      </div>
+      <div class="modal-steps" id="modalSteps"></div>
+      <div class="modal-body markdown" id="modalBody"></div>
+      <div class="modal-foot">
+        <span id="modalEngine" class="badge muted"></span>
+        <button id="btnDownloadReport" class="btn primary">⤓ Download HTML report</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
