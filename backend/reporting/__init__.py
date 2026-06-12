@@ -1,0 +1,5 @@
+"""Incident report generation (self-contained HTML; print-to-PDF in any browser)."""
+
+from .report import build_html_report
+
+__all__ = ["build_html_report"]
