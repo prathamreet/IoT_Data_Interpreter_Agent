@@ -1,0 +1,2 @@
+# The golden dataset is generated here by `python -m evaluation.make_golden`
+# (it is also auto-generated on first run of `python -m evaluation.evaluate`).
