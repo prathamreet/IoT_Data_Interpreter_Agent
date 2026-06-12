@@ -32,3 +32,7 @@ services:
       sh -c "printf 'listener 1883\nlistener 9001\nprotocol websockets\nallow_anonymous true\n'
       > /mosquitto/config/mosquitto.conf && exec mosquitto -c /mosquitto/config/mosquitto.conf"
     restart: unless-stopped
+
+# Note: the pitch deck is a SEPARATE, standalone image — it is intentionally
+# NOT part of this compose file, so `docker compose up` never touches it.
+# Build/run it on its own: see deck/README.md.
