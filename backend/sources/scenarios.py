@@ -96,7 +96,7 @@ SCENARIOS: dict[str, Scenario] = {
     ),
     "hvac_failure": Scenario(
         name="hvac_failure",
-        title="HVAC failure — data center",
+        title="HVAC failure – data center",
         description=(
             "Cooling loss in Aisle A. Inlet temperature climbs steadily and "
             "cleanroom humidity rises in correlation as dehumidification drops."
@@ -108,10 +108,10 @@ SCENARIOS: dict[str, Scenario] = {
     ),
     "bearing_wear": Scenario(
         name="bearing_wear",
-        title="Bearing wear — conveyor",
+        title="Bearing wear – conveyor",
         description=(
             "Early-stage bearing degradation on Conveyor B-7. Vibration trends "
-            "upward with growing variance; the adjacent motor heats in step — a "
+            "upward with growing variance; the adjacent motor heats in step – a "
             "collective anomaly across two sensors."
         ),
         injections=[
@@ -122,11 +122,11 @@ SCENARIOS: dict[str, Scenario] = {
     ),
     "sensor_malfunction": Scenario(
         name="sensor_malfunction",
-        title="Sensor malfunction — hydraulic line",
+        title="Sensor malfunction – hydraulic line",
         description=(
             "Pressure transducer on Line H-3 stops responding (stuck reading) "
             "and intermittently drops out. This is a DATA-QUALITY fault, not a "
-            "process anomaly — the agent should flag the sensor, not the asset."
+            "process anomaly – the agent should flag the sensor, not the asset."
         ),
         injections=[
             Injection("PRES-02", "flatline", start=18, duration=0, magnitude=152.0),
@@ -135,7 +135,7 @@ SCENARIOS: dict[str, Scenario] = {
     ),
     "cold_chain_breach": Scenario(
         name="cold_chain_breach",
-        title="Cold-chain breach — cold storage",
+        title="Cold-chain breach – cold storage",
         description=(
             "Cold Storage CS-1 door left ajar. Temperature rises out of the "
             "compliant band; a humidity spike accompanies the incursion."
