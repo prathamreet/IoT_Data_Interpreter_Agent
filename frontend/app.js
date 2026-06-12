@@ -1,4 +1,4 @@
-/* ── IoT Data Interpreter Agent — dashboard logic (dependency-free) ──── */
+// Dashboard logic (dependency-free)
 
 const $ = (sel) => document.querySelector(sel);
 const state = { sensors: {}, scenario: null, llm: false, lastReport: null };
@@ -6,7 +6,7 @@ const feedEvents = new Map();   // event id -> DOM element
 const cards = new Map();        // sensor id -> { el, canvas, refs }
 const actions = new Map();      // sensor id -> action item
 
-// ── helpers ───────────────────────────────────────────────────────────
+// Helper functions
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -18,7 +18,7 @@ function sevClass(sev) {
   return ({ Critical: "crit", Moderate: "mod", Low: "low" }[sev] || "low");
 }
 function fmt(v, d = 2) {
-  return (v === null || v === undefined || isNaN(v)) ? "—" : Number(v).toFixed(d);
+  return (v === null || v === undefined || isNaN(v)) ? "–" : Number(v).toFixed(d);
 }
 
 function mdToHtml(md) {
@@ -41,7 +41,7 @@ function mdToHtml(md) {
   return out.join("\n");
 }
 
-// ── WebSocket ──────────────────────────────────────────────────────────
+// WebSocket connection handler
 let ws = null;
 function connect() {
   const proto = location.protocol === "https:" ? "wss" : "ws";
@@ -66,7 +66,7 @@ function handle(msg) {
   }
 }
 
-// ── hello / initial state ──────────────────────────────────────────────
+// Hello/initial state lifecycle handlers
 function onHello(msg) {
   state.llm = msg.llm_enabled;
   const badge = $("#llmBadge");
@@ -117,7 +117,7 @@ async function switchScenario(name) {
   catch (e) { /* ignore */ }
 }
 
-// ── snapshot ───────────────────────────────────────────────────────────
+// Snapshot rendering
 function onSnapshot(msg) {
   state.scenario = msg.scenario;
   renderKpis(msg.kpis || {});
@@ -126,7 +126,7 @@ function onSnapshot(msg) {
 
 function renderKpis(k) {
   const tiles = [
-    { n: k.total ?? "—", l: "Sensors", cls: "" },
+    { n: k.total ?? "–", l: "Sensors", cls: "" },
     { n: k.anomalous ?? 0, l: "Anomalous", cls: (k.anomalous > 0 ? "alert" : "good") },
     { n: k.malfunction ?? 0, l: "Sensor faults", cls: (k.malfunction > 0 ? "warn" : "good") },
     { n: Math.round((k.avg_confidence ?? 1) * 100) + "%", l: "Avg confidence", cls: "" },
@@ -136,7 +136,7 @@ function renderKpis(k) {
     `<div class="kpi ${t.cls}"><div class="n">${t.n}</div><div class="l">${t.l}</div></div>`).join("");
 }
 
-// ── sensor cards ───────────────────────────────────────────────────────
+// Sensor card updating and sparkline drawing
 function updateCard(s) {
   state.sensors[s.sensor_id] = s;
   let entry = cards.get(s.sensor_id);
@@ -235,7 +235,7 @@ function drawSpark(canvas, s) {
   }
 }
 
-// ── anomaly feed ───────────────────────────────────────────────────────
+// Anomaly feed updating and rendering
 function currentSev(ev) { return ev.severity || sevWord(ev.severity_hint); }
 
 function eventInner(ev) {
@@ -302,10 +302,10 @@ function renderQueue() {
   items.sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3));
   q.innerHTML = items.map((a) =>
     `<div class="qitem"><span class="pill ${sevClass(a.severity)}">${a.severity}</span>
-      <span class="qtext"><span class="qsid">${escapeHtml(a.sensor_id)}</span> — ${escapeHtml(a.action)}</span></div>`).join("");
+      <span class="qtext"><span class="qsid">${escapeHtml(a.sensor_id)}</span> – ${escapeHtml(a.action)}</span></div>`).join("");
 }
 
-// ── investigation modal ────────────────────────────────────────────────
+// Investigation modal and API actions
 const modal = $("#modal");
 $("#btnInvestigate").onclick = runInvestigation;
 $("#modalClose").onclick = () => (modal.hidden = true);
@@ -334,7 +334,7 @@ async function runInvestigation() {
   }
 }
 
-// ── report download ────────────────────────────────────────────────────
+// Incident report download and compilation
 $("#btnReport").onclick = () => window.open("/api/report.html", "_blank");
 $("#btnDownloadReport").onclick = async () => {
   const r = state.lastReport || {};
@@ -351,7 +351,7 @@ $("#btnDownloadReport").onclick = async () => {
   } catch (e) { alert("Report download failed: " + e.message); }
 };
 
-// ── boot ───────────────────────────────────────────────────────────────
+// Boot/Initialization
 connect();
 window.addEventListener("resize", () => {
   for (const s of Object.values(state.sensors)) {
