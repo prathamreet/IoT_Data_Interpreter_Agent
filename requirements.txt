@@ -1,0 +1,14 @@
+# ── IoT Data Interpreter Agent — backend dependencies ──────────────────
+# Pinned to recent, Windows-friendly wheels. Python 3.10+ recommended.
+
+fastapi>=0.110
+uvicorn[standard]>=0.29        # includes websockets + httptools
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3              # Isolation Forest
+anthropic>=0.40                # Claude API (optional at runtime — see README)
+python-dotenv>=1.0
+
+# ── Optional: real-hardware ingestion (uncomment when wiring sensors) ──
+# paho-mqtt>=2.0               # MQTT broker client for MQTTDataSource
+# pyserial>=3.5               # direct serial / USB sensor boards

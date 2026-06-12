@@ -1,0 +1,34 @@
+# ── IoT Data Interpreter Agent — Docker Compose ──────────────────────
+# Start everything:   docker compose up --build
+# Then open:          http://localhost:8000
+# Stop:               Ctrl+C   (or:  docker compose down)
+
+services:
+  app:
+    build: .
+    image: iot-interpreter:latest
+    container_name: iot-interpreter
+    ports:
+      # host:container  →  open http://localhost:8000 in your browser.
+      # If 8000 is busy, change the LEFT number, e.g. "8080:8000" → :8080.
+      - "8000:8000"
+    env_file:
+      # Optional settings (API key, models, tuning). Ships ready-to-run.
+      - .env
+    restart: unless-stopped
+
+  # ── OPTIONAL: local MQTT broker for the real-hardware path ───────────
+  # Does NOT start by default. Bring it up only when wiring real sensors:
+  #     docker compose --profile hardware up --build
+  # Then set DATA_SOURCE=mqtt and MQTT_HOST=mqtt in your .env.
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: iot-mqtt
+    profiles: ["hardware"]
+    ports:
+      - "1883:1883"   # MQTT
+      - "9001:9001"   # MQTT over WebSocket (optional)
+    command: >
+      sh -c "printf 'listener 1883\nlistener 9001\nprotocol websockets\nallow_anonymous true\n'
+      > /mosquitto/config/mosquitto.conf && exec mosquitto -c /mosquitto/config/mosquitto.conf"
+    restart: unless-stopped

@@ -1,0 +1,15 @@
+# Keep the build context (and image) small and clean.
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+.git/
+.gitignore
+.pytest_cache/
+tests/
+reports/
+*.md
+run.ps1
+run.sh
+.env
