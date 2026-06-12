@@ -70,12 +70,14 @@ function handle(msg) {
 function onHello(msg) {
   state.llm = msg.llm_enabled;
   const badge = $("#llmBadge");
-  if (msg.llm_enabled) {
-    badge.className = "badge live";
-    badge.textContent = "● Claude live · " + (msg.narration_model || "");
-  } else {
-    badge.className = "badge offline";
-    badge.textContent = "◐ Offline mode · deterministic engine";
+  if (badge) {
+    if (msg.llm_enabled) {
+      badge.className = "badge-status live";
+      badge.textContent = `Claude Active (${msg.narration_model || 'Agent'})`;
+    } else {
+      badge.className = "badge-status offline";
+      badge.textContent = "Deterministic Rules Engine";
+    }
   }
   buildScenarios(msg.scenarios, msg.scenario);
   if (msg.snapshot) onSnapshot(msg.snapshot);
@@ -241,14 +243,12 @@ function currentSev(ev) { return ev.severity || sevWord(ev.severity_hint); }
 function eventInner(ev) {
   const sev = currentSev(ev);
   const kindTag = ev.kind === "malfunction" ? "SENSOR FAULT" : "anomaly";
+  let body;
   let src = "";
   if (ev.narration) {
     src = ev.used_llm
-      ? '<span class="src ai">CLAUDE</span>'
-      : '<span class="src local">RULES</span>';
-  }
-  let body;
-  if (ev.narration) {
+      ? '<span class="src ai">Claude</span>'
+      : '<span class="src local">Rules</span>';
     const nr = ev.narration;
     body = `<div class="ev-summary">${escapeHtml(nr.summary)}</div>
       <div class="ev-detail"><b>Likely cause:</b> ${escapeHtml(nr.root_cause)}</div>
@@ -256,7 +256,7 @@ function eventInner(ev) {
       <div class="ev-detail" style="color:var(--faint)">${escapeHtml(nr.confidence_note)}</div>`;
   } else {
     body = `<div class="ev-summary">${escapeHtml(ev.sensor_type)} deviation on ${escapeHtml(ev.sensor_id)} (z ${fmt(ev.z_score, 1)}).</div>
-      <div class="ev-pending"><span class="spinner"></span> ${state.llm ? "Claude is analyzing…" : "Generating narration…"}</div>`;
+      <div class="ev-pending"><span class="spinner"></span> Analyzing…</div>`;
   }
   return `<div class="ev-head">
       <span class="pill ${sevClass(sev)}">${sev}</span>
@@ -314,9 +314,8 @@ modal.addEventListener("click", (e) => { if (e.target === modal) modal.hidden = 
 async function runInvestigation() {
   modal.hidden = false;
   $("#modalSteps").innerHTML = "";
-  $("#modalEngine").textContent = "";
   $("#modalBody").innerHTML =
-    `<div class="loading-row"><span class="spinner"></span> ${state.llm ? "Agent is investigating the fleet with Claude…" : "Compiling deterministic investigation…"}</div>`;
+    `<div class="loading-row"><span class="spinner"></span> Investigating the fleet…</div>`;
   try {
     const res = await fetch("/api/investigate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
     const data = await res.json();
@@ -327,8 +326,10 @@ async function runInvestigation() {
     }).join("") || '<span class="step">direct analysis</span>';
     $("#modalBody").innerHTML = mdToHtml(data.report_markdown);
     const badge = $("#modalEngine");
-    badge.className = "badge " + (data.used_llm ? "live" : "offline");
-    badge.textContent = data.used_llm ? "Claude · " + (data.model || "") : "Deterministic (offline)";
+    if (badge) {
+        badge.className = "badge-status " + (data.used_llm ? "live" : "offline");
+        badge.textContent = data.used_llm ? `Claude (${data.model || 'Agent'})` : "Deterministic Mode";
+    }
   } catch (e) {
     $("#modalBody").innerHTML = `<p style="color:var(--crit)">Investigation failed: ${escapeHtml(e.message)}</p>`;
   }
@@ -358,4 +359,16 @@ window.addEventListener("resize", () => {
     const entry = cards.get(s.sensor_id);
     if (entry) drawSpark(entry.canvas, s);
   }
+});
+
+// Tabs logic
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(c => c.hidden = true);
+    btn.classList.add("active");
+    $("#" + btn.dataset.target).hidden = false;
+    // Trigger resize to redraw sparklines if needed
+    window.dispatchEvent(new Event("resize"));
+  });
 });

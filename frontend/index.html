@@ -18,8 +18,14 @@
         <p class="tag">Raw telemetry → narrated insight → action · Builathon UC #43</p>
       </div>
     </div>
+    
+    <div class="tabs" id="mainTabs">
+      <button class="tab-btn active" data-target="tab-dashboard">Dashboard</button>
+      <button class="tab-btn" data-target="tab-incidents">Incidents</button>
+    </div>
+
     <div class="status">
-      <span id="llmBadge" class="badge muted">checking engine…</span>
+      <span id="llmBadge" class="badge-status muted">Engine Status</span>
       <span class="conn"><span id="connDot" class="dot off">●</span><span id="connText">connecting…</span></span>
     </div>
   </header>
@@ -34,33 +40,35 @@
 
   <section class="kpis" id="kpis"></section>
 
-  <main class="grid">
-    <section class="col-left">
+  <!-- Dashboard Tab -->
+  <main class="tab-content active" id="tab-dashboard">
+    <div class="col-full">
       <h2 class="section-title">Live Sensors <span class="hint">Z-score · IQR · Isolation Forest</span></h2>
       <div class="sensor-grid" id="sensorGrid"></div>
-    </section>
+    </div>
+  </main>
 
-    <section class="col-right">
-      <div class="panel">
-        <div class="panel-head">
-          <h2>AI Anomaly Feed</h2>
-          <button id="btnInvestigate" class="btn primary">⚙ Deep Investigation</button>
-        </div>
-        <div class="feed" id="feed">
-          <div class="empty">Watching the fleet… anomalies will appear here, narrated.</div>
-        </div>
+  <!-- Incidents Tab -->
+  <main class="tab-content split-view" id="tab-incidents" hidden>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>AI Anomaly Feed</h2>
+        <button id="btnInvestigate" class="btn primary">⚙ Deep Investigation</button>
       </div>
+      <div class="feed" id="feed">
+        <div class="empty">Watching the fleet… anomalies will appear here, narrated.</div>
+      </div>
+    </div>
 
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Maintenance Queue</h2>
-          <button id="btnReport" class="btn">⤓ Report</button>
-        </div>
-        <div class="queue" id="queue">
-          <div class="empty">No open actions.</div>
-        </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Maintenance Queue</h2>
+        <button id="btnReport" class="btn">⤓ Report</button>
       </div>
-    </section>
+      <div class="queue" id="queue">
+        <div class="empty">No open actions.</div>
+      </div>
+    </div>
   </main>
 
   <div class="modal" id="modal" hidden>
@@ -72,7 +80,7 @@
       <div class="modal-steps" id="modalSteps"></div>
       <div class="modal-body markdown" id="modalBody"></div>
       <div class="modal-foot">
-        <span id="modalEngine" class="badge muted"></span>
+        <span id="modalEngine" class="badge-status muted"></span>
         <button id="btnDownloadReport" class="btn primary">⤓ Download HTML report</button>
       </div>
     </div>
