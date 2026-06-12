@@ -67,7 +67,7 @@ def build_html_report(payload: dict) -> str:
     generated = time.strftime("%Y-%m-%d %H:%M:%S")
     scenario = payload.get("scenario", "nominal")
     used_llm = payload.get("used_llm", False)
-    model = payload.get("model", "—")
+    model = payload.get("model", "–")
     report_html = _md_to_html(payload.get("report_markdown", "_No findings._"))
 
     rows = []
@@ -90,7 +90,7 @@ def build_html_report(payload: dict) -> str:
         color = _SEV_COLOR.get(a.get("severity", "Low"), "#10b981")
         action_items.append(
             f"<li><span class='pill' style='background:{color}'>{html.escape(a.get('severity',''))}</span> "
-            f"<strong>{html.escape(a.get('sensor_id',''))}</strong> — {html.escape(a.get('action',''))}</li>"
+            f"<strong>{html.escape(a.get('sensor_id',''))}</strong> – {html.escape(a.get('action',''))}</li>"
         )
     actions_html = "\n".join(action_items) or "<li>No open actions.</li>"
 
@@ -101,47 +101,159 @@ def build_html_report(payload: dict) -> str:
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <title>IoT Incident Report — {generated}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {{ --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --accent:#2563eb; }}
+  :root {{
+    --ink: #0e0f0c;
+    --body: #454745;
+    --muted: #868685;
+    --line: #e8ebe6;
+    --accent: #9fe870;
+    --accent-bg: #e2f6d5;
+  }}
   * {{ box-sizing:border-box; }}
-  body {{ font-family:'Segoe UI',system-ui,Arial,sans-serif; color:var(--ink);
-         max-width:880px; margin:0 auto; padding:40px 32px; line-height:1.55; }}
-  header {{ border-bottom:3px solid var(--accent); padding-bottom:16px; margin-bottom:24px; }}
-  h1 {{ font-size:26px; margin:0 0 4px; }}
-  h2 {{ font-size:19px; margin:26px 0 8px; border-left:4px solid var(--accent);
-        padding-left:10px; }}
-  h3 {{ font-size:16px; margin:18px 0 6px; }}
-  .meta {{ color:var(--muted); font-size:13px; }}
-  .badge {{ display:inline-block; background:#eff6ff; color:var(--accent);
-           border:1px solid #bfdbfe; border-radius:999px; padding:3px 12px; font-size:12px;
-           font-weight:600; }}
-  .kpis {{ display:flex; gap:14px; flex-wrap:wrap; margin:18px 0; }}
-  .kpi {{ flex:1; min-width:120px; background:#f8fafc; border:1px solid var(--line);
-         border-radius:10px; padding:12px 14px; }}
-  .kpi .n {{ font-size:24px; font-weight:700; }}
-  .kpi .l {{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }}
-  table {{ width:100%; border-collapse:collapse; margin:10px 0 4px; font-size:14px; }}
-  th,td {{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }}
-  th {{ color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }}
-  code {{ background:#f1f5f9; padding:1px 5px; border-radius:4px; font-size:13px; }}
-  ul {{ padding-left:22px; }}
-  .pill {{ color:#fff; border-radius:999px; padding:1px 9px; font-size:11px; font-weight:700;
-          margin-right:6px; }}
-  footer {{ margin-top:34px; padding-top:14px; border-top:1px solid var(--line);
-           color:var(--muted); font-size:12px; }}
-  @media print {{ body {{ padding:0; }} }}
+  body {{
+    font-family: 'Inter', system-ui, Arial, sans-serif;
+    color: var(--ink);
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 32px;
+    line-height: 1.6;
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }}
+  header {{
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+  }}
+  h1 {{
+    font-size: 28px;
+    font-weight: 900;
+    margin: 0 0 6px;
+    letter-spacing: -0.5px;
+  }}
+  h2 {{
+    font-size: 20px;
+    font-weight: 900;
+    margin: 32px 0 12px;
+    border-left: 4px solid var(--accent);
+    padding-left: 12px;
+    letter-spacing: -0.3px;
+  }}
+  h3 {{
+    font-size: 16px;
+    font-weight: 700;
+    margin: 20px 0 8px;
+  }}
+  .meta {{
+    color: var(--body);
+    font-size: 13.5px;
+    font-weight: 500;
+  }}
+  .badge {{
+    display: inline-block;
+    background-color: var(--accent-bg);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 9999px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 700;
+  }}
+  .kpis {{
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 24px 0;
+  }}
+  .kpi {{
+    flex: 1;
+    min-width: 130px;
+    background-color: var(--line);
+    border-radius: 16px;
+    padding: 16px;
+  }}
+  .kpi .n {{
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }}
+  .kpi .l {{
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-top: 4px;
+  }}
+  table {{
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14.5px;
+  }}
+  th, td {{
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+  }}
+  th {{
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }}
+  code {{
+    background-color: var(--line);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 13px;
+  }}
+  ul {{
+    padding-left: 24px;
+  }}
+  li {{
+    margin: 6px 0;
+    color: var(--body);
+  }}
+  .pill {{
+    color: var(--ink);
+    border-radius: 9999px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 8px;
+    display: inline-block;
+  }}
+  footer {{
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.5;
+  }}
+  @media print {{
+    body {{ padding: 0; }}
+  }}
 </style></head>
 <body>
   <header>
-    <h1>IoT Data Interpreter — Incident Report</h1>
+    <h1>IoT Data Interpreter – Incident Report</h1>
     <div class="meta">Generated {generated} · Scenario: <code>{html.escape(scenario)}</code>
       · <span class="badge">{engine_badge}</span></div>
   </header>
 
   <div class="kpis">
-    <div class="kpi"><div class="n">{kpis.get('total','—')}</div><div class="l">Sensors</div></div>
-    <div class="kpi"><div class="n">{kpis.get('anomalous','—')}</div><div class="l">Anomalous</div></div>
-    <div class="kpi"><div class="n">{kpis.get('malfunction','—')}</div><div class="l">Malfunction</div></div>
+    <div class="kpi"><div class="n">{kpis.get('total','–')}</div><div class="l">Sensors</div></div>
+    <div class="kpi"><div class="n">{kpis.get('anomalous','–')}</div><div class="l">Anomalous</div></div>
+    <div class="kpi"><div class="n">{kpis.get('malfunction','–')}</div><div class="l">Malfunction</div></div>
     <div class="kpi"><div class="n">{int(kpis.get('avg_confidence',1)*100)}%</div><div class="l">Avg confidence</div></div>
   </div>
 
@@ -156,6 +268,6 @@ def build_html_report(payload: dict) -> str:
     <tbody>{sensor_table}</tbody>
   </table>
 
-  <footer>IoT Data Interpreter Agent · Builathon Use Case #43 — Real-World Automation.
+  <footer>IoT Data Interpreter Agent · Builathon Use Case #43 – Real-World Automation.
   This report was generated automatically from live sensor telemetry.</footer>
 </body></html>"""
