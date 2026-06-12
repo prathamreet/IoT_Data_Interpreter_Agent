@@ -82,7 +82,7 @@ async def api_report(req: ReportRequest):
     html = build_html_report({
         "report_markdown": md,
         "used_llm": req.used_llm,
-        "model": req.model or "—",
+        "model": req.model or "–",
         "kpis": engine.kpis(),
         "sensors": list(engine.analyses.values()),
         "actions": list(engine.actions.values()),
